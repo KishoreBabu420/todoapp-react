@@ -6,7 +6,7 @@ const Alert = ({ message, type, removeAlert, items }) => {
       removeAlert();
     }, 3000);
     return () => clearTimeout(timeOut);
-  }, [items]);
+  }, [items, removeAlert]);
 
   return <p className={`alert alert-${type}`}>{message}</p>;
 };

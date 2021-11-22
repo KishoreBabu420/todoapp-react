@@ -5,9 +5,19 @@ import List from './components/List';
 
 import { v4 as uuidv4 } from 'uuid';
 
+const getLocalStorage = () => {
+  let list = localStorage.getItem('list');
+
+  if (list) {
+    return JSON.parse(localStorage.getItem('list'));
+  } else {
+    return [];
+  }
+};
+
 const App = () => {
   const [name, setName] = useState('');
-  const [list, setList] = useState([]);
+  const [list, setList] = useState(getLocalStorage());
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
   const [alert, setAlert] = useState({
@@ -37,6 +47,7 @@ const App = () => {
       setList(newList);
       setIsEditing(false);
       setEditId(null);
+      setName('');
       //show edit alert
       showAlert(true, 'Grocery updated', 'success');
     } else {
@@ -82,10 +93,13 @@ const App = () => {
     setIsEditing(true);
     setEditId(id);
     setName(itemToEdit.title);
-    console.log(itemToEdit);
     //show Alert
     showAlert(true, 'Grocery updted successfully', 'sucess');
   };
+
+  useEffect(() => {
+    localStorage.setItem('list', JSON.stringify(list));
+  }, [list]);
   return (
     <section className='section-center'>
       <form className='grocery-form' onSubmit={submitHandler}>
@@ -106,18 +120,20 @@ const App = () => {
           </button>
         </div>
       </form>
-      <div className='grocery-container'>
-        <List items={list} removeItem={removeItem} editItem={editItem} />
-        <button
-          className='clear-btn'
-          onClick={() => {
-            setList([]);
-            showAlert(true, 'All items removed', 'danger');
-          }}
-        >
-          Clear Items
-        </button>
-      </div>
+      {list.length > 0 && (
+        <div className='grocery-container'>
+          <List items={list} removeItem={removeItem} editItem={editItem} />
+          <button
+            className='clear-btn'
+            onClick={() => {
+              setList([]);
+              showAlert(true, 'All items removed', 'danger');
+            }}
+          >
+            Clear Items
+          </button>
+        </div>
+      )}
     </section>
   );
 };
